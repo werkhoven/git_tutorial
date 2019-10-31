@@ -33,7 +33,7 @@ git config --global user.email johndoe@gmail.com
 
 Navigate to where you would like to start your new repo via the terminal and create a new directory, preferrably one to match the name of your new repo.
 
-*Unix/Linux
+*Unix/Linux*
 ```
 md git_tutorial
 cd git_tutorial
@@ -80,9 +80,6 @@ To save our edits and exit Vim, we can instruct it to *Write* and *Quit* by pres
 ```
 
 ## Tracking and committing changes
-
-
-
 
 So far our repo is not tracking any of our work. To instruct it to track changes to our files, we have to first mark them to be tracked. This is called *staging* commits, which essentially means that the changes we have made will be queued for saving to the repo next time we commit. We can inspect which files are tracked/modified via:
 
@@ -197,7 +194,7 @@ Fast-forward
 
 ## Merge conflicts
 
-Sometimes our files cannot be directly merged because they contain changes that are in direct conflict with one another. Let's deliberately create a conflict between our two branches. From `master`, open our function with Vim and make the following edit:
+Sometimes our files cannot be directly merged because they contain changes that are in direct conflict with one another. Let's deliberately create a conflict between our two branches. From `master`, open our function with Vim and make the below edits to the file. Note that what was previously an addition operation has now been replaced with division.
 
 ```Matlab
 function out = myfunc(arg)
@@ -205,6 +202,91 @@ function out = myfunc(arg)
 arg = arg / 2:
 out = arg + 2;
 ```
+
+ Now add and commit the changes. Then checkout the test branch again.
+
+ ```
+ git add myfunc.m
+ git commit -m 'replaced addition with division'
+ git checkout test_branch
+ ```
+
+ Now make the following conflicting to changes to the test branch.
+
+ ```Matlab
+function out = myfunc(arg)
+
+arg = arg - 2:
+out = arg + 2;
+```
+
+Add and commit the changes to the test branch, then checkout the master branch again.
+
+ ```
+ git add myfunc.m
+ git commit -m 'replaced addition with division'
+ git checkout master
+ ```
+
+ Now when we attempt to merge `test_branch` into `master` we receive the following warning.
+
+ ```
+ $ git merge test_branch
+Auto-merging myfunc.m
+CONFLICT (content): Merge conflict in myfunc.m
+Automatic merge failed; fix conflicts and then commit the result.
+```
+
+If we inspect the status of the repo, we see that `myfunc.m` is not merged:
+
+```
+You have unmerged paths.
+  (fix conflicts and run "git commit")
+  (use "git merge --abort" to abort the merge)
+
+Unmerged paths:
+  (use "git add <file>..." to mark resolution)
+
+        both modified:   myfunc.m
+```
+
+Opening the file in Vim to resolve the conflict, we can see that Git has automatically inserted some lines to flag the specific conflict between the two branches as well as marking to source branch for each edit. *Note*: HEAD indicates the head of the current branch, in this case `master`.
+
+```Matlab
+function out = myfunc(arg)
+
+<<<<<<< HEAD
+arg = arg / 2;
+=======
+arg = arg - 2;
+>>>>>>> test_branch
+out = arg + 2;
+```
+
+Resolve the conflict by rejecting the changes from the master branch, resulting in the function below. Then save and quit the file.
+
+ ```Matlab
+function out = myfunc(arg)
+
+arg = arg - 2:
+out = arg + 2;
+```
+
+Now we can add and commit the changes to complete the merge.
+
+```
+git add myfunc.m
+git commit -m 'merge test_branch'
+```
+
+## Updating the remote repository
+
+Now that we have made some changes to our local repository, we update the remote repo with our changes.
+
+```
+git push origin master
+```
+
 
 
 
