@@ -279,13 +279,42 @@ git add myfunc.m
 git commit -m 'merge test_branch'
 ```
 
-## Updating the remote repository
+## Pushing and pulling the remote repository
 
 Now that we have made some changes to our local repository, we update the remote repo with our changes.
 
 ```
 git push origin master
 ```
+
+If we refresh the GitHub remote repo, we should see our updated files as well as our most recent commit messages for each file on the remote repository.
+
+In addition to pushing our work to the repo, we may want to *pull* work from the remote repository to our local repository. From the remote repo, open `myfunc.m` and select to edit the file (pencil icon on the upper right). Edit the file to include a print statement with the output value and then select *Commit changes* at the bottom of the screen.
+
+```Matlab
+function out = myfunc(arg)
+
+arg = arg - 2;
+out = arg + 2;
+fprintf('The value of out is %i\n',out);
+```
+
+Now from the local repository, open our file again in Vim and add another print statement indicating the start of the function.
+
+```Matlab
+function out = myfunc(arg)
+
+fprintf('Starting up the function\n');
+arg = arg - 2;
+out = arg + 2;
+```
+
+Now add and commit the changes. We now have a conflict between the remote repo master branch and our local master branch. Pull the remote changes via:
+
+```
+git pull origin master
+```
+
 
 
 
